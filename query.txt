@@ -1,0 +1,61 @@
+// query list activity
+Select
+activity_user.id,
+activity_user.created_at,
+activity_user.id_activity_schedule,
+activity_user.id_cms_users,
+cms_users.name,
+cms_users.id_cms_privileges,
+cms_privileges.name,
+activity_report.id_activity_mst_status,
+activity_mst_status.status,
+activity_schedule.id_activity,
+activity.location,
+activity.id_activity_mst_type,
+activity_mst_type.type
+from activity_user
+join activity_schedule on activity_user.id_activity_schedule = activity_schedule.id
+join cms_users on activity_user.id_cms_users = cms_users.id
+join cms_privileges on cms_users.id_cms_privileges = cms_privileges.id
+join activity_report on activity_schedule.id = activity_report.id_activity_schedule
+join activity_mst_status on activity_report.id_activity_mst_status = activity_mst_status.id
+join activity on activity_schedule.id_activity = activity.id
+join activity_mst_type on activity.id_activity_mst_type = activity_mst_type.id
+
+// query detail activity
+Select
+activity_user.id,
+activity_user.created_at,
+activity_user.id_activity_schedule,
+activity_user.id_cms_users,
+activity_schedule.start_date,
+activity_schedule.end_date,
+cms_users.name,
+cms_users.id_cms_privileges,
+cms_privileges.name as privileges,
+activity_report.brosur,
+activity_report.note,
+activity_report.lat,
+activity_report.lng,
+activity_report.id_activity_mst_status,
+activity_mst_status.status,
+activity_schedule.id_activity,
+activity.location,
+activity.id_activity_mst_type,
+activity_mst_type.type,
+activity.id_mst_outlet,
+mst_outlet.outlet_id,
+mst_outlet.outlet_name,
+mst_outlet.outlet_address,
+mst_outlet.outlet_status
+from activity_user
+join activity_schedule on activity_user.id_activity_schedule = activity_schedule.id
+join cms_users on activity_user.id_cms_users = cms_users.id
+join cms_privileges on cms_users.id_cms_privileges = cms_privileges.id
+join activity_report on activity_schedule.id = activity_report.id_activity_schedule
+join activity_mst_status on activity_report.id_activity_mst_status = activity_mst_status.id
+join activity on activity_schedule.id_activity = activity.id
+join activity_mst_type on activity.id_activity_mst_type = activity_mst_type.id
+join mst_outlet on activity.id_mst_outlet = mst_outlet.id
+
+// query create activity
