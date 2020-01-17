@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func GetActivityList2(activityList structs.GetActivityList, limit string, offset string) ([]structs.GetActivityList, error){
+func GetActivityList2(activityList structs.GetActivityList, limit string, offset string) ([]structs.GetActivityList, error) {
 	fmt.Println(activityList)
 	data := []structs.GetActivityList{}
 	get := idb.DB.Table("activity_user").
@@ -69,7 +69,7 @@ func GetListActivity(listActivity structs.GetActivity) ([]structs.GetActivityBin
 	if listActivity.IdCmsUsers != nil {
 		getData = getData.Where("activity_user.id_cms_users in (?)", int64(*listActivity.IdCmsUsers))
 	}
-	if listActivity.Id != nil{
+	if listActivity.Id != nil {
 		getData = getData.Where("activity_user.id in (?)", int(*listActivity.Id))
 	}
 	err := getData.Find(&data).Error
@@ -132,8 +132,8 @@ func GetListActivity(listActivity structs.GetActivity) ([]structs.GetActivityBin
 
 func GetDetail(id_activity_detail string) structs.JsonResponse {
 	var (
-		detail 	structs.GetDetail
-		t		structs.Component
+		detail structs.GetDetail
+		t      structs.Component
 	)
 
 	response := structs.JsonResponse{}
@@ -171,7 +171,6 @@ func GetDetail(id_activity_detail string) structs.JsonResponse {
 	}
 	return response
 }
-
 
 //func CreateActivitys(id_mst_outlet string, id_activity_mst_type string, id_cms_users string, id_cms_users_other string,  location string, lat string, lng string) structs.JsonResponse {
 //
@@ -228,11 +227,11 @@ func GetDetail(id_activity_detail string) structs.JsonResponse {
 //	return response
 //}
 
-func GetactivityStatus()structs.JsonResponse  {
+func GetactivityStatus() structs.JsonResponse {
 
-	var(
+	var (
 		statusActivity []structs.GetActivityStatus
-		t structs.Component
+		t              structs.Component
 	)
 
 	response := structs.JsonResponse{}
@@ -254,10 +253,10 @@ func GetactivityStatus()structs.JsonResponse  {
 	return response
 }
 
-func GetActivityType()structs.JsonResponse {
-	var(
+func GetActivityType() structs.JsonResponse {
+	var (
 		statusType []structs.GetActivityType
-		t structs.Component
+		t          structs.Component
 	)
 	response := structs.JsonResponse{}
 
@@ -277,12 +276,11 @@ func GetActivityType()structs.JsonResponse {
 	return response
 }
 
-func  CreateActivitys2(activity structs.CreateActivity, activity_sec structs.CreateActivitySchedule, activity_user structs.CreateActivityUserBind) (structs.CreateActivity, error) {
+func CreateActivitys2(activity structs.CreateActivity, activity_sec structs.CreateActivitySchedule, activity_user structs.CreateActivityUserBind) (structs.CreateActivity, error) {
 
 	var err error
 	var t = structs.Component{}
 	tx := idb.DB.Begin()
-
 
 	if err = tx.Error; err != nil {
 		fmt.Println("err start tx", err.Error())
@@ -298,7 +296,7 @@ func  CreateActivitys2(activity structs.CreateActivity, activity_sec structs.Cre
 	}
 
 	//
-	activity_sec.IdActivity = activity.Id // ambil id dari table activity
+	activity_sec.IdActivity = activity.Id       // ambil id dari table activity
 	activity_sec.CreatedAt = activity.CreatedAt // ambil tanggal dibuat dari tabel activity
 	if err = tx.Table("activity_schedule").Create(&activity_sec).Error; err != nil {
 		tx.Rollback()
@@ -306,18 +304,17 @@ func  CreateActivitys2(activity structs.CreateActivity, activity_sec structs.Cre
 	}
 
 	activity_user.IdActivitySchedule = activity_sec.Id // ambil id activity dari activity_schedule
-	activity_user.CreatedAt = activity.CreatedAt // ambil tanggal dibuat dari tabel activity
-	for i := range activity_user.IdCmsUsers{ // perulangan untuk id cms users dari activity_user
-		activity_user_create := structs.CreateActivityUser{} // pembuatan variable untuk ke dalam struct CreateActivityUsers
-		activity_user_create.IdCmsUsers = activity_user.IdCmsUsers[i] // perulangan input untuk id cms users atau cfa
-		activity_user_create.CreatedAt = activity_user.CreatedAt // mengambil tanggal dibuat
+	activity_user.CreatedAt = activity.CreatedAt       // ambil tanggal dibuat dari tabel activity
+	for i := range activity_user.IdCmsUsers {          // perulangan untuk id cms users dari activity_user
+		activity_user_create := structs.CreateActivityUser{}                       // pembuatan variable untuk ke dalam struct CreateActivityUsers
+		activity_user_create.IdCmsUsers = activity_user.IdCmsUsers[i]              // perulangan input untuk id cms users atau cfa
+		activity_user_create.CreatedAt = activity_user.CreatedAt                   // mengambil tanggal dibuat
 		activity_user_create.IdActivitySchedule = activity_user.IdActivitySchedule // ambil dari struct CreateActivityUsers
 		if err = tx.Table("activity_user").Create(&activity_user_create).Error; err != nil {
 			tx.Rollback()
 			return activity, err
 		}
 	}
-
 
 	tx.Commit()
 
@@ -326,30 +323,11 @@ func  CreateActivitys2(activity structs.CreateActivity, activity_sec structs.Cre
 }
 func GetsActivitys(activity structs.ActivityList,
 	limit string, offset string, list structs.ListBinds) ([]structs.ActivityList, error) {
-	data := []structs.ActivityList{}
-	data2 := []structs.ListBinds{}
-	//getAyam := idb.DB.Table("activity_user").
-	//	Select("activity_user.id, to_char(activity_user.created_at, 'YYYY-MM-DD HH24:MI') as created_at, " +
-	//		"activity_user.id_activity_schedule, " + "activity_user.id_cms_users as users_activity, " +
-	//		"cms_users.name as name_user, activity_schedule.id_activity, " +
-	//		"to_char(activity_schedule.start_date, 'YYYY-MM-DD') as start_date, " +
-	//		"to_char(activity_schedule.end_date, 'YYYY-MM-DD') as end_date, " +
-	//		"to_char(activity_schedule.started, 'HH24:MI') as started," +
-	//		"to_char(activity_schedule.ended, 'HH24:MI') as ended, activity_schedule.note, " +
-	//		"activity.id_mst_outlet, activity.id_activity_mst_type, activity_mst_type.type, activity.location, " +
-	//		"activity.id_cms_users as id_cms_users_spv, mst_outlet.outlet_name, " +
-	//		"mst_outlet.id_mst_branch, mst_branch.branch_name").
-	//	Joins("join cms_users on activity_user.id_cms_users = cms_users.id").
-	//	Joins("join activity_schedule on activity_user.id_activity_schedule = activity_schedule.id").
-	//	Joins("join cms_privileges on cms_users.id_cms_privileges = cms_privileges.id").
-	//	Joins("join activity on activity_schedule.id_activity = activity.id").
-	//	Joins("join activity_mst_type on activity.id_activity_mst_type = activity_mst_type.id").
-	//	Joins("join mst_outlet on activity.id_mst_outlet = mst_outlet.id").
-	//	Joins("join mst_branch on mst_outlet.id_mst_branch = mst_branch.id").
-	//	Order("activity_user.created_at desc")
+	data := []structs.ActivityList{} // struct list data activity.
+	data2 := []structs.ListBinds{}   // struct list data array users.
 
 	getSechedule := idb.DB.Table("activity_schedule").
-		Select("activity_schedule.id as id_activity_schedule,activity_schedule.id_activity, " +
+		Select("activity_schedule.id as id_activity_schedule, activity_schedule.id_activity as id, " +
 			"to_char(activity_schedule.start_date, 'YYYY-MM-DD') as start_date, " +
 			"to_char(activity_schedule.end_date, 'YYYY-MM-DD') as end_date, " +
 			"to_char(activity_schedule.started, 'HH24:MI') as started," +
@@ -363,40 +341,38 @@ func GetsActivitys(activity structs.ActivityList,
 		Joins("join mst_branch on mst_outlet.id_mst_branch = mst_branch.id").
 		Order("activity_schedule.id_activity desc").Find(&data).Error
 
-	if getSechedule != nil{
-		return data,errors.New("Kesalahan Server")
+	// kesalahan query
+	if getSechedule != nil {
+		return data, errors.New("Kesalahan Server")
 	}
+	// data kosong
 	if len(data) <= 0 {
 		return data, errors.New("Tidak ada data")
 	}
-
 	if limit != "" {
-
 	}
 	if offset != "" {
-
 	}
 
-	var idSchedule []int64
+	var idSchedule []int64 // grouping by id_activity_schedule
 
-	for i := range data{
-
-		idSchedule = append(idSchedule,data[i].IdActivitySchedule )
-
+	for i := range data { // looping 'i' base on data variable
+		// idSchedule (arrayList,slice) base load data in id_activity_schedule
+		idSchedule = append(idSchedule, data[i].IdActivitySchedule)
 	}
 
 	idb.DB.Table("activity_user").
-		Select("activity_user.id, to_char(activity_user.created_at, 'YYYY-MM-DD HH24:MI') as created_at, " +
-			"activity_user.id_activity_schedule, " + "activity_user.id_cms_users as id_cms_users_activity, " +
+		Select("activity_user.id as id_activity_users, to_char(activity_user.created_at, 'YYYY-MM-DD HH24:MI') as created_at, "+
+			"activity_user.id_activity_schedule, "+"activity_user.id_cms_users , "+
 			"cms_users.name as name_user").
 		Joins("join cms_users on activity_user.id_cms_users = cms_users.id").
 		Where("activity_user.id_activity_schedule in (?)", idSchedule).Find(&data2)
 
-	for i := range data{
+	for i := range data {
 
-		for x := range data2{
-
-			if data[i].IdActivitySchedule == data2[x].IdActivitySchedule{
+		for x := range data2 {
+			// penyesuaian data antara struct
+			if data[i].IdActivitySchedule == data2[x].IdActivitySchedule {
 
 				data[i].DataUser = append(data[i].DataUser, data2[x])
 			}

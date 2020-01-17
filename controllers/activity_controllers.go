@@ -30,7 +30,7 @@ func GetActivity(c *gin.Context) {
 		data, err_user := models.GetListActivity(activity)
 
 		var id_activity_schedule []int64
-		for k := range data{
+		for k := range data {
 			id_activity_schedule = append(id_activity_schedule, data[k].IdActivitySchedule)
 		}
 
@@ -51,13 +51,13 @@ func GetActivity(c *gin.Context) {
 		response.Data = activity
 		c.JSON(http.StatusOK, response)
 		//for k := range data {
-			//	id = append(id, data[k].IdPembeli, data[k].IdPenjual)
-			//}
+		//	id = append(id, data[k].IdPembeli, data[k].IdPenjual)
+		//}
 	}
 }
 
 func GetActivitys(c *gin.Context) {
-	ayams := structs.ActivityList{}
+	activitys := structs.ActivityList{}
 	list := structs.ListBinds{}
 
 	limit := c.Query("limit")
@@ -66,7 +66,7 @@ func GetActivitys(c *gin.Context) {
 	t := structs.Component{}
 	response := structs.JsonResponse{}
 
-	err := c.BindQuery(&ayams)
+	err := c.BindQuery(&activitys)
 	err2 := c.BindQuery(&list)
 	if err != nil || err2 != nil {
 		var m string
@@ -79,7 +79,7 @@ func GetActivitys(c *gin.Context) {
 		response.ApiMessage = "validate " + m
 		c.JSON(400, response)
 	} else {
-		data, errc := models.GetsActivitys(ayams, limit, offset, list)
+		data, errc := models.GetsActivitys(activitys, limit, offset, list)
 
 		//list.IdActivitySchedule = int64(len(id_schedule))
 		//list.UsersActivity = int64(len(user_activity))
@@ -180,7 +180,6 @@ func GetDetail(c *gin.Context) {
 	}
 }
 
-
 func GetActivityStatus(c *gin.Context) {
 
 	responses := structs.JsonResponse{}
@@ -211,7 +210,7 @@ func CreateActivity(c *gin.Context) {
 	activity_sec := structs.CreateActivitySchedule{}
 	activity_user := structs.CreateActivityUserBind{}
 
-	var t  = structs.Component{}
+	var t = structs.Component{}
 
 	response := structs.JsonResponse{}
 

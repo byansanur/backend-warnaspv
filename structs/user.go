@@ -47,6 +47,12 @@ type CheckUsersLogin struct {
 	Password string `json:"password"`
 }
 
+type CekLogout struct {
+	Id       int64  `gorm:"Default:'null'" json:"id"`
+	Npm      string `gorm:"Default:'null'" json:"npm"`
+	Password string `gorm:"Default:'null'" json:"password"`
+}
+
 type GetKPI struct {
 	Id               int    `json:"id"`
 	Name             string `json:"name"`

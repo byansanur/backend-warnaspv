@@ -1,16 +1,16 @@
 package main
 
 import (
+	"./auth"
 	"./controllers"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
 	"log"
-	"./auth"
 )
 
 func main() {
 	router := gin.Default()
-	gin.DebugPrintRouteFunc  = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
+	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
 		log.Printf("sedoooot %v %v %v %v\n", httpMethod, absolutePath, handlerName, nuHandlers)
 	}
 
@@ -31,10 +31,9 @@ func main() {
 		v1.GET("/bian_activity_detail", controllers.GetDetail)
 		v1.GET("/bian_activity_status", controllers.GetActivityStatus)
 		v1.GET("/bian_activity_type", controllers.GetActivityType)
-		v1.GET("/bian_list_activity_ayam", controllers.GetActivitys)
+		v1.GET("/list_activity", controllers.GetActivitys)
 		//v1.GET("/bian_activity_list_2", controllers.GetActivity)
 		//v1.GET("/bian_activity_list", controllers.GetActivityList2)
-
 
 		v1.GET("/lead/download", controllers.DownloadLead)
 		v1.GET("/lead/users", controllers.LeadUsers)
