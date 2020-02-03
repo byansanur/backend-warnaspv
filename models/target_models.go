@@ -651,6 +651,7 @@ func TargetStatus(id_mst_branch []int, created_at string) structs.JsonResponse {
 	target_working = target_working.Find(&status)
 	errtarget_working := target_working.Error
 
+	// target visit
 	target_visit := idb.DB.Table("target").Select("count(target.id) as target_visit")
 	target_working = target_working.Where("target.id_target_mst_status = 4")
 	if created_at != "" {
@@ -662,6 +663,7 @@ func TargetStatus(id_mst_branch []int, created_at string) structs.JsonResponse {
 	target_visit = target_visit.Find(&status)
 	errtarget_visit := target_visit.Error
 
+	// target unqualified
 	target_unqualified := idb.DB.Table("target").Select("count(target.id) as target_unqualified")
 	target_unqualified = target_unqualified.Where("target.id_target_mst_status = 5")
 	if created_at != "" {
@@ -673,6 +675,7 @@ func TargetStatus(id_mst_branch []int, created_at string) structs.JsonResponse {
 	target_unqualified = target_unqualified.Find(&status)
 	errtarget_unqualified := target_unqualified.Error
 
+	// target converted
 	target_converted := idb.DB.Table("target").Select("count(target.id) as target_converted")
 	target_converted = target_converted.Where("target.id_target_mst_status = 6")
 	if created_at != "" {

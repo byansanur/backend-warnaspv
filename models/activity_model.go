@@ -276,7 +276,9 @@ func GetActivityType() structs.JsonResponse {
 	return response
 }
 
-func CreateActivitys2(activity structs.CreateActivity, activity_sec structs.CreateActivitySchedule, activity_user structs.CreateActivityUserBind) (structs.CreateActivity, error) {
+func CreateActivitys2(activity structs.CreateActivity,
+	activity_sec structs.CreateActivitySchedule,
+	activity_user structs.CreateActivityUserBind) (structs.CreateActivity, error) {
 
 	var err error
 	var t = structs.Component{}
@@ -326,12 +328,15 @@ func GetsActivitys(activity structs.ActivityList,
 	data := []structs.ActivityList{} // struct list data activity.
 	data2 := []structs.ListBinds{}   // struct list data array users.
 
-	getSechedule := idb.DB.Table("activity_schedule").
-		Select("activity_schedule.id as id_activity_schedule, activity_schedule.id_activity as id, " +
+	getSechedulex := idb.DB.Table("activity_schedule").
+		Select("activity_schedule.id as id_activity_schedule, " +
+			"to_char(activity_schedule.created_at, 'YYYY-MM-DD') as created_at, " +
+			"activity_schedule.id_activity, " +
 			"to_char(activity_schedule.start_date, 'YYYY-MM-DD') as start_date, " +
 			"to_char(activity_schedule.end_date, 'YYYY-MM-DD') as end_date, " +
 			"to_char(activity_schedule.started, 'HH24:MI') as started," +
-			"to_char(activity_schedule.ended, 'HH24:MI') as ended, activity_schedule.note, " +
+			"to_char(activity_schedule.ended, 'HH24:MI') as ended, " +
+			"activity_schedule.note, " +
 			"activity.id_mst_outlet, activity.id_activity_mst_type, activity_mst_type.type, activity.location, " +
 			"activity.id_cms_users as id_cms_users_spv, mst_outlet.outlet_name, " +
 			"mst_outlet.id_mst_branch, mst_branch.branch_name").
@@ -339,7 +344,29 @@ func GetsActivitys(activity structs.ActivityList,
 		Joins("join activity_mst_type on activity.id_activity_mst_type = activity_mst_type.id").
 		Joins("join mst_outlet on activity.id_mst_outlet = mst_outlet.id").
 		Joins("join mst_branch on mst_outlet.id_mst_branch = mst_branch.id").
-		Order("activity_schedule.id_activity desc").Find(&data).Error
+		Order("activity_schedule.id_activity desc")
+
+	if activity.IdActivity != nil {
+		getSechedulex = getSechedulex.Where("activity_schedule.id_activity in (?)", int(*activity.IdActivity))
+	}
+	if activity.CreatedAt != "" {
+		getSechedulex = getSechedulex.Where("activity_schedule.created_at LIKE", "%"+activity.CreatedAt+"%")
+	}
+	if activity.IdMstOutlet != nil {
+		getSechedulex = getSechedulex.Where("activity.id_mst_outlet in (?)", int(*activity.IdMstOutlet))
+	}
+	if activity.IdMstBranch != nil {
+		getSechedulex = getSechedulex.Where("mst_outlet.id_mst_branch in (?)", int(*activity.IdMstBranch))
+	}
+
+	if limit != "" {
+		getSechedulex = getSechedulex.Limit(limit)
+	}
+	if offset != "" {
+		getSechedulex = getSechedulex.Offset(offset)
+	}
+
+	getSechedule := getSechedulex.Find(&data).Error
 
 	// kesalahan query
 	if getSechedule != nil {
@@ -348,10 +375,6 @@ func GetsActivitys(activity structs.ActivityList,
 	// data kosong
 	if len(data) <= 0 {
 		return data, errors.New("Tidak ada data")
-	}
-	if limit != "" {
-	}
-	if offset != "" {
 	}
 
 	var idSchedule []int64 // grouping by id_activity_schedule

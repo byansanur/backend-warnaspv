@@ -34,6 +34,7 @@ func main() {
 		v1.GET("/list_activity", controllers.GetActivitys)
 		//v1.GET("/bian_activity_list_2", controllers.GetActivity)
 		//v1.GET("/bian_activity_list", controllers.GetActivityList2)
+		v1.GET("/bian_kpi_outled_lead", controllers.GetKpiOutletLeads)
 
 		v1.GET("/lead/download", controllers.DownloadLead)
 		v1.GET("/lead/users", controllers.LeadUsers)
@@ -107,5 +108,5 @@ func main() {
 
 		v1.GET("/cms_users_area", controllers.GetCmsUsersArea)
 	}
-	router.Run(":3001")
+	router.Run(":3007")
 }

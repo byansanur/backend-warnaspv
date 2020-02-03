@@ -41,7 +41,8 @@ type GetActivityList struct {
 //}
 
 type ActivityList struct {
-	Id                 *int64        `json:"id" form:"id"`
+	IdActivity         *int64        `json:"id_activity" form:"id_activity" binding:"-"`
+	CreatedAt          string        `json:"created_at" form:"created_at"`
 	IdActivitySchedule int64         `json:"id_activity_schedule"`
 	StartDate          string        `json:"start_date"`
 	EndDate            string        `json:"end_date"`
@@ -53,7 +54,7 @@ type ActivityList struct {
 	Type               string        `json:"type"`
 	Location           string        `json:"location"`
 	OutletName         string        `json:"outlet_name"`
-	IdMstBranch        *int          `json:"id_mst_branch"`
+	IdMstBranch        *int          `json:"id_mst_branch" form:"id_mst_branch" binding:"-"`
 	BranchName         string        `json:"branch_name"`
 	DataUser           []interface{} `json:"data_user"`
 }
